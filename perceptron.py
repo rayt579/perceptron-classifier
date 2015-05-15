@@ -14,7 +14,6 @@ def dot_prod(v1,v2):
 	# Return scalar value of the dot product
 	n = v1.size 
 	dp = 0
-
 	for i in xrange(n): 
 		dp = dp + (v1[i] * v2[i])
 	return dp  
@@ -42,7 +41,8 @@ def perceptron(data, labels, n_passes):
 		else: 
 			c_vectors[m] += 1
 
-	return np.insert(w_vectors,(data[i].size), c_vectors, axis=1)
+	weight_mat = np.insert(w_vectors,(data[i].size), c_vectors, axis=1)
+	return weight_mat
 
 def percep_orig_clf(weight_mat, data): 
 	'''
@@ -57,7 +57,7 @@ def percep_orig_clf(weight_mat, data):
 	pred = []
 
 	for i in xrange(n):
-		if dot_prod(w,data[i]) > 0:
+		if np.sign(dot_prod(w,data[i])) == 1:
 			pred.append(1)
 		else:
 			pred.append(-1)
@@ -68,26 +68,67 @@ def voted_percep_clf(weight_mat, data):
 	'''
 	Returns prediction vector using voted classification rule
 	'''
+	x, y = weight_mat.shape
+	weight_vecs = list(weight_mat[:,:-1])
+	c_vecs = list(weight_mat[:,y-1])
+	
+	n, d = data.shape
+	pred = []
+
+	# Voted perceptron rule applied to each test point
+	for i in xrange(n):
+		tot = 0 
+		for j in xrange(len(weight_vecs)):
+			tot += (c_vecs[j] * np.sign(dot_prod(weight_vecs[j],data[i])))
+
+		# Classification rule for point
+		if np.sign(tot) == 1:
+			pred.append(1)
+		else:
+			pred.append(-1)
+
+	return np.array(pred)
 
 def avg_percep_clf(weight_mat, data):
 	'''
 	Returns prediction vector using averaged classification rule
 	'''
+	x, y = weight_mat.shape
+	weight_vecs = list(weight_mat[:,:-1])
+	c_vecs = list(weight_mat[:,y-1])
+
+	n, d = data.shape
+	pred = []
+
+	# Get average weight vector
+	w = np.zeros(d)
+	for j in xrange(len(weight_vecs)):
+		w += (c_vecs[j] * weight_vecs[j])
+
+	# Classify the points
+	for i in xrange(n):
+		if np.sign(dot_prod(w,data[i])) == 1:
+			pred.append(1)
+		else: 
+			pred.append(-1)
+
+	return np.array(pred)
 
 def main():
 	# Parse input 
 	train = np.genfromtxt("toy_data/toy_train.txt")
 	test = np.genfromtxt("toy_data/toy_test.txt")
 
+	n_feat = train[0].size
 	# Separate data from labels
-	train_labels = train[:,2]
+	train_labels = train[:,n_feat-1]
 	train_data = train[:,:-1]
-	test_labels = test[:,2]
+	test_labels = test[:,n_feat-1]
 	test_data = test[:,:-1]
 
 
 	wm = perceptron(train_data,train_labels,1)
-	print percep_orig_clf(wm,test_data)
+	print avg_percep_clf(wm,test_data)
 
 if __name__ == '__main__':
 	main()
