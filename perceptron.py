@@ -1,7 +1,7 @@
 """
 Implementation of Perceptron algorithm on MNIST dataset. 
 Here we use binary classification, distinguishing digits '6' from '0'
-with a linear classifier with averaged and voting decision rules
+with a linear classifier with averaged and voting decision rules.
 """
 
 import numpy as np
@@ -149,8 +149,8 @@ def main():
 	averaged perceptron at 1, 2, and 3 passes.
 	'''
 	# Parse input 
-	train = np.genfromtxt("data/hw4atrain.txt")
-	test = np.genfromtxt("data/hw4atest.txt")
+	train = np.genfromtxt("data/train_data.txt")
+	test = np.genfromtxt("data/test_data.txt")
 
 	# Separate data from labels
 	n_feat = train[0].size
