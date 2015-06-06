@@ -1,0 +1,15 @@
+Training Error
+Pass 1
+Perceptron: 0.01
+Voted: 0.013
+Average: 0.01
+Training Error
+Pass 2
+Perceptron: 0.008
+Voted: 0.006
+Average: 0.008
+Training Error
+Pass 3
+Perceptron: 0.008
+Voted: 0.003
+Average: 0.002
